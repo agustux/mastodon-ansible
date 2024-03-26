@@ -7,8 +7,8 @@ sudo dnf install git -y
 git clone https://github.com/mastodon/mastodon-ansible.git
 cd mastodon-ansible
 pip install -r requirements.txt
+cp templates/secrets.yml.tpl secrets.yml
 # do this from "~/mastodon-ansible":
-# cp templates/secrets.yml.tpl secrets.yml
 # when you vi, fix the passwords and stuff, then type ":x" to save
 # vi secrets.yml
 # copy-paste this into secrets.yml
@@ -23,9 +23,10 @@ disable_letsencrypt: 'true'" >> secrets.yml
 
 ansible-vault encrypt secrets.yml
 
-echo "$(hostname -I)       guschat" >> /etc/hosts
+echo "$(hostname -I)       $(hostname -I)" >> /etc/hosts
 
-sudo hostnamectl set-hostname guschat
+
+# sudo hostnamectl set-hostname guschat
 
 # for our puposes we also need to add our own key to .ssh/authorized_keys "ssh-keygen -t ed25519 -C gus" because we'll use localhost
 # ssh into the thing and vi bare/vars/common.yml and set the "run_preflight_checks" to "false":
@@ -36,9 +37,12 @@ npx update-browserslist-db@latest
 ansible-playbook bare/playbook.yml --ask-vault-pass -i localhost, -u gus --ask-become-pass -e 'ansible_python_interpreter=/usr/bin/python3' --extra-vars="@secrets.yml"
 
 # add localhost to the hosts whitelist:
+sudo vi /home/mastodon/live/config/environments/production.rb
 # [root@localhost environments]# grep config.hosts /home/mastodon/live/config/environments/production.rb -B 1
 #Rails.application.configure do
 #  config.hosts << "localhost"
-sudo vi /home/mastodon/live/config/environments/production.rb
+
+# to allow any ip to avoid the 403 append the following as well and restart:
+#  config.hosts << "0.0.0.0"
 # and restart mastodon:
 sudo systemctl restart mastodon-web
