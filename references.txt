@@ -27,8 +27,30 @@ vi live/app/models/user.rb
 https://github.com/mastodon/mastodon/discussions/27919
 
 
-tail /etc/postfix/main.cf
-smtpd_tls_protocols = >= SSLv2
+echo "test email" | sendmail foo@localhost.com
+cat /var/mail/gus
+
+vi /etc/postfix/main.cf
+# smtpd_tls_protocols = >= SSLv2
+# nah:
+# home_mailbox = Maildir/
 
 systemctl restart postfix
 
+
+[root@localhost ~]# grep SMTP /home/mastodon/live/.env.production
+SMTP_SERVER=localhost.com
+SMTP_PORT=25
+SMTP_AUTH_METHOD=none
+SMTP_OPENSSL_VERIFY_MODE=none
+SMTP_FROM_ADDRESS=mastodon@localhost.com
+SMTP_ENABLE_STARTTLS=never
+
+systemctl restart mastodon-*.service
+
+
+
+
+
+https://192.168.122.115/auth/confirmation?confirmation_token=
+QbmMYVRNuyvekz7Cme-d
