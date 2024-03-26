@@ -1,0 +1,34 @@
+192.168.122.90
+
+local_domain: '192.168.122.90'
+mastodon_db_password: 'gus'
+redis_pass: 'gus'
+letsencrypt_email: ''
+mastodon_host: '192.168.122.90'
+run_preflight_checks: 'false'
+disable_letsencrypt: 'true'
+
+
+
+      registrations_open: Setting.registrations_mode != 'none' && !Rails.configuration.x.single_user_mode,
+
+
+
+# set the registrations_mode to open
+#https://fossies.org/linux/mastodon/config/settings.yml
+(env) [root@guschat mastodon]# grep open /home/mastodon/live/config/settings.yml 
+  registrations_mode: 'open'
+
+
+# in mastodon's home:
+vi live/app/models/user.rb
+
+
+https://github.com/mastodon/mastodon/discussions/27919
+
+
+tail /etc/postfix/main.cf
+smtpd_tls_protocols = >= SSLv2
+
+systemctl restart postfix
+
